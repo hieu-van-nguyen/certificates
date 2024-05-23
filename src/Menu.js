@@ -1,4 +1,6 @@
 import React from "react";
+import Button from "react-bootstrap/Button";
+
 import IntroductionToFrontEndDevelopment from "./pdf/Introduction-to-Front-End-Development.pdf";
 import ProgrammingWithJavaScript from "./pdf/Programming-with-JavaScript.pdf";
 import IntroductionToBackEndDevelopment from "./pdf/Introduction-to-Back-End-Development.pdf";
@@ -36,14 +38,16 @@ const Menu = ({ items }) => {
                 <h4>{title}</h4>
               </header>
               <p className="item-text">{desc}</p>
-              <a
+              <Button
+                as="a"
+                variant="success"
                 onClick={() => {
                   const certificatePdf = getCertificate(certificate);
                   window.open(certificatePdf);
                 }}
               >
                 View Certificate
-              </a>
+              </Button>
             </div>
           </article>
         );
