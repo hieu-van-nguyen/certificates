@@ -30,6 +30,14 @@ const menu = [
     img: "/images/item-4.png",
     desc: `Foundational programming skills with Python `,
     certificate: "Programming-in-Python.pdf"
+  },
+  {
+    id: 5,
+    title: "Google-AI",
+    category: "AI",
+    img: "/images/item-5.png",
+    desc: `Goggle AI Certificate helps build your AI fluency and get more done, faster  `,
+    certificate: "Google-AI.pdf"
   }
 ];
 export default menu;

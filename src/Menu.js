@@ -5,6 +5,7 @@ import IntroductionToFrontEndDevelopment from "./pdf/Introduction-to-Front-End-D
 import ProgrammingWithJavaScript from "./pdf/Programming-with-JavaScript.pdf";
 import IntroductionToBackEndDevelopment from "./pdf/Introduction-to-Back-End-Development.pdf";
 import ProgrammingInPython from "./pdf/Programming-in-Python.pdf";
+import GoogleAI from "./pdf/Google-AI.pdf";
 
 const Menu = ({ items }) => {
   const getCertificate = (certificate) => {
@@ -17,6 +18,8 @@ const Menu = ({ items }) => {
         return IntroductionToBackEndDevelopment;
       case "Programming-in-Python.pdf":
         return ProgrammingInPython;
+      case "Google-AI.pdf":
+        return GoogleAI;
       default:
         return IntroductionToFrontEndDevelopment;
     }
