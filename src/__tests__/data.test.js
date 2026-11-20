@@ -37,6 +37,8 @@ describe("certificate data", () => {
     "%s: preview image exists in public/ (%s)",
     (_title, img) => {
       expect(img.startsWith("/")).toBe(true);
+      // Run `npm run images` to convert new PNG/JPEG previews to optimized WebP.
+      expect(img).toMatch(/\.webp$/);
       expect(fileExistsExactly(path.join(publicDir, img))).toBe(true);
     }
   );

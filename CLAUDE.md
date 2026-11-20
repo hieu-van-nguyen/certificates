@@ -16,6 +16,7 @@ A small React 18 single-page app, built with **Vite 6** and tested with **Vitest
 | Single test file | `npx vitest run src/__tests__/Menu.test.jsx` | |
 | Production build | `npm run build` | Output goes to `build/` (set in `vite.config.js`) |
 | Preview the build | `npm run preview` | Serves `build/` at http://localhost:4173/certificates/ |
+| Optimize images | `npm run images` | Converts every PNG/JPEG in `public/images/` to an 800 px-wide WebP and **deletes the original** |
 | Deploy | `npm run deploy` | Builds, then pushes `build/` to the `gh-pages` branch. **This publishes the live site. Only run it when the user asks.** |
 
 Requires Node `^18 || ^20 || >=22`. Don't upgrade to Vite 7 or Vitest 4 while the dev machine is on Node 20.17, because they need Node ≥ 20.19. For the same reason `@testing-library/jest-dom` is pinned below 6.10, which needs Node 22.
@@ -35,6 +36,8 @@ src/
   index.css       All styling (CSS variables in :root). There are no other stylesheets.
   setupTests.js   Vitest setup (jest-dom matchers). Referenced by vite.config.js.
   __tests__/      All tests (App, Menu, data).
+scripts/
+  optimize-images.js  `npm run images`: PNG/JPEG → resized WebP (see Assets & paths).
 public/           Copied as-is to build/ and served under the base path.
   images/         Card preview images, referenced from data.js `img`.
   pdf/            Certificate PDFs, referenced by filename from data.js `certificate`.
@@ -49,7 +52,7 @@ Data flow: `data.js` → `App` (filters by category) → `Menu` (renders cards).
   id: 6,                                    // unique number; use the next integer
   title: "Certificate-Name",                // shown as the card heading (CSS capitalizes it)
   category: "AI",                           // becomes a filter button automatically
-  img: "/images/item-6.png",                // path under public/
+  img: "/images/item-6.webp",               // path under public/; must be .webp
   desc: "Short description",
   certificate: "Certificate-Name.pdf"       // filename inside public/pdf/
 }
@@ -68,12 +71,13 @@ Data flow: `data.js` → `App` (filters by category) → `Menu` (renders cards).
 - **Always build public URLs with `assetUrl()`** from `src/assetUrl.js`. The site is served from `/certificates/` (`base` in `vite.config.js`), so a bare `/pdf/x.pdf` link breaks on GitHub Pages. `assetUrl` also avoids a double slash, since `BASE_URL` ends in `/` and the `img` paths start with one.
 - If the repo or Pages path ever changes, update **both** `base` in `vite.config.js` and `homepage` in `package.json`.
 - Filenames are case-sensitive on GitHub Pages even though Windows ignores case. `data.test.js` checks exact case, so keep it passing.
-- Keep preview images small: about 450 px wide, WebP preferred. The current PNGs are about 500 KB each, which is too large (see IMPROVEMENTS.md 3.1).
+- **Preview images must be WebP**, produced by `npm run images` (`scripts/optimize-images.js`, using `sharp`). They're 800 px wide, which is 2× the widest display size (the 400 px single-column card on phones), at quality 80, about 30 KB each. `data.test.js` fails if an `img` isn't `.webp`. If the card layout gets wider, raise `MAX_WIDTH` in the script.
 
 ### Adding or changing a certificate
-1. Put the PDF in `public/pdf/` and the preview image in `public/images/`.
-2. Add one entry to `src/data.js`. No component changes are needed.
-3. Run `npm run test:run`. `data.test.js` fails if an id is duplicated, a field is missing, or a referenced image or PDF doesn't exist with exactly that filename.
+1. Put the PDF in `public/pdf/` and the preview image (any size PNG/JPEG) in `public/images/`.
+2. Run `npm run images` to turn it into `<name>.webp`.
+3. Add one entry to `src/data.js` with `img: "/images/<name>.webp"`. No component changes are needed.
+4. Run `npm run test:run`. `data.test.js` fails if an id is duplicated, a field is missing, or a referenced image or PDF doesn't exist with exactly that filename.
 
 ### Components & accessibility
 - **"View Certificate" is a plain `<a className="btn btn-success" target="_blank" rel="noopener noreferrer">`.** Don't use a component that adds `role="button"` to it (e.g. `react-bootstrap`'s `Button`). That hides the link role from screen readers and breaks `getByRole("link")` in the tests.

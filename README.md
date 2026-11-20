@@ -51,6 +51,7 @@ Then open http://localhost:3000/certificates/ (it opens automatically). The app 
 | `npm run test:coverage` | Runs all tests once and prints a coverage report (HTML in `coverage/index.html`) |
 | `npm run build` | Creates an optimized production build in `build/` |
 | `npm run preview` | Serves the production build locally at http://localhost:4173/certificates/ |
+| `npm run images` | Converts PNG/JPEG previews in `public/images/` to optimized 800 px WebP (replaces the originals) |
 | `npm run deploy` | Builds and publishes `build/` to the `gh-pages` branch |
 
 ## 📁 Project Structure
@@ -58,6 +59,8 @@ Then open http://localhost:3000/certificates/ (it opens automatically). The app 
 ```
 index.html           Page template (title, meta tags) and Vite entry point
 vite.config.js       Base path, dev server, build and test settings
+scripts/
+  optimize-images.js Image optimizer behind `npm run images`
 public/
   images/            Card preview images
   pdf/               Certificate PDFs
@@ -74,14 +77,18 @@ src/
 ## 📝 Adding a New Certificate
 
 1. Copy the certificate PDF into `public/pdf/`.
-2. Copy a preview image into `public/images/`. Keep it small: about 450 px wide, WebP or a compressed PNG.
+2. Copy a preview image (PNG or JPEG, any size) into `public/images/`, then run:
+   ```bash
+   npm run images
+   ```
+   This replaces it with a resized WebP of about 30 KB.
 3. Add an entry to the array in `src/data.js`:
    ```javascript
    {
      id: 6,                                 // next unused number
      title: "Certificate-Name",
      category: "CategoryName",              // a new category gets its own filter button
-     img: "/images/item-6.png",             // path under public/
+     img: "/images/item-6.webp",            // the WebP from step 2
      desc: "Short description of the certification",
      certificate: "Certificate-Name.pdf"    // filename in public/pdf/
    }
@@ -90,7 +97,7 @@ src/
    ```bash
    npm run test:run
    ```
-   The data tests fail if an id is duplicated, a field is missing, or the image or PDF can't be found with that exact filename.
+   The data tests fail if an id is duplicated, a field is missing, an image isn't WebP, or the image or PDF can't be found with that exact filename.
 
 > Filenames are case-sensitive on GitHub Pages. Make sure `img` and `certificate` match the files exactly.
 
@@ -114,4 +121,4 @@ This builds the app (`predeploy`) and pushes the `build/` folder. The `/certific
 
 ## 🗺️ Roadmap
 
-Planned improvements, including image optimization, richer certificate details (issuer, date, verification link), and CI/CD, are listed in [IMPROVEMENTS.md](IMPROVEMENTS.md).
+Planned improvements, including richer certificate details (issuer, date, verification link), and CI/CD, are listed in [IMPROVEMENTS.md](IMPROVEMENTS.md).
