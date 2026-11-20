@@ -1,4 +1,5 @@
 import React from "react";
+import { assetUrl } from "./assetUrl";
 
 const Menu = ({ items }) => {
   return (
@@ -8,7 +9,7 @@ const Menu = ({ items }) => {
         return (
           <article key={id} className="menu-item">
             <img
-              src={process.env.PUBLIC_URL + img}
+              src={assetUrl(img)}
               alt={title}
               className="photo"
             />
@@ -19,7 +20,7 @@ const Menu = ({ items }) => {
               <p className="item-text">{desc}</p>
               <a
                 className="btn btn-success"
-                href={`${process.env.PUBLIC_URL}/pdf/${certificate}`}
+                href={assetUrl(`pdf/${certificate}`)}
                 target="_blank"
                 rel="noopener noreferrer"
               >

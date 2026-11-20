@@ -1,10 +1,18 @@
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import items from "../data";
 
-const root = path.resolve(__dirname, "..", "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const publicDir = path.join(root, "public");
 const pdfDir = path.join(publicDir, "pdf");
+
+// Case-sensitive existence check. fs.existsSync ignores case on Windows/macOS,
+// but GitHub Pages is case-sensitive, so compare against the real directory listing.
+const fileExistsExactly = (filePath) => {
+  const dir = path.dirname(filePath);
+  return fs.existsSync(dir) && fs.readdirSync(dir).includes(path.basename(filePath));
+};
 
 describe("certificate data", () => {
   test("has at least one certificate", () => {
@@ -28,7 +36,8 @@ describe("certificate data", () => {
   test.each(items.map((item) => [item.title, item.img]))(
     "%s: preview image exists in public/ (%s)",
     (_title, img) => {
-      expect(fs.existsSync(path.join(publicDir, img))).toBe(true);
+      expect(img.startsWith("/")).toBe(true);
+      expect(fileExistsExactly(path.join(publicDir, img))).toBe(true);
     }
   );
 
@@ -36,7 +45,7 @@ describe("certificate data", () => {
     "%s: PDF exists in public/pdf/ (%s)",
     (_title, certificate) => {
       expect(certificate).toMatch(/\.pdf$/);
-      expect(fs.existsSync(path.join(pdfDir, certificate))).toBe(true);
+      expect(fileExistsExactly(path.join(pdfDir, certificate))).toBe(true);
     }
   );
 });

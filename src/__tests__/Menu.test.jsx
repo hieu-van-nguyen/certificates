@@ -11,7 +11,7 @@ describe("Menu", () => {
       const link = within(card).getByRole("link", { name: /view certificate/i });
       const href = link.getAttribute("href");
       expect(href).toMatch(/\.pdf$/);
-      expect(href).toBe(`${process.env.PUBLIC_URL}/pdf/${items[i].certificate}`);
+      expect(href).toBe(`/certificates/pdf/${items[i].certificate}`);
     });
   });
 
