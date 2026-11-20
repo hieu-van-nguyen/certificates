@@ -1,15 +1,17 @@
 import React from "react";
 
-const Categories = ({ categories, filterItems }) => {
+const Categories = ({ categories, activeCategory, onSelect }) => {
   return (
-    <div className="btn-container">
+    <div className="btn-container" role="group" aria-label="Filter certificates by category">
       {categories.map((category) => {
+        const isActive = category === activeCategory;
         return (
           <button
             type="button"
-            className="filter-btn"
+            className={isActive ? "filter-btn active" : "filter-btn"}
             key={category}
-            onClick={() => filterItems(category)}
+            aria-pressed={isActive}
+            onClick={() => onSelect(category)}
           >
             {category}
           </button>
