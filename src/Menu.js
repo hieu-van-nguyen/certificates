@@ -7,28 +7,23 @@ import IntroductionToBackEndDevelopment from "./pdf/Introduction-to-Back-End-Dev
 import ProgrammingInPython from "./pdf/Programming-in-Python.pdf";
 import GoogleAI from "./pdf/Google-AI.pdf";
 
-const Menu = ({ items }) => {
-  const getCertificate = (certificate) => {
-    switch (certificate) {
-      case "Introduction-to-Front-End-Development.pdf":
-        return IntroductionToFrontEndDevelopment;
-      case "Programming-with-JavaScript.pdf":
-        return ProgrammingWithJavaScript;
-      case "Introduction-to-Back-End-Development.pdf":
-        return IntroductionToBackEndDevelopment;
-      case "Programming-in-Python.pdf":
-        return ProgrammingInPython;
-      case "Google-AI.pdf":
-        return GoogleAI;
-      default:
-        return IntroductionToFrontEndDevelopment;
-    }
-  };
+const certificates = {
+  "Introduction-to-Front-End-Development.pdf": IntroductionToFrontEndDevelopment,
+  "Programming-with-JavaScript.pdf": ProgrammingWithJavaScript,
+  "Introduction-to-Back-End-Development.pdf": IntroductionToBackEndDevelopment,
+  "Programming-in-Python.pdf": ProgrammingInPython,
+  "Google-AI.pdf": GoogleAI,
+};
 
+const Menu = ({ items }) => {
   return (
     <div className="section-center">
       {items.map((menuItem) => {
         const { id, title, img, desc, certificate } = menuItem;
+        const certificatePdf = certificates[certificate];
+        if (!certificatePdf) {
+          console.error(`No PDF registered for certificate "${certificate}"`);
+        }
         return (
           <article key={id} className="menu-item">
             <img
@@ -44,9 +39,9 @@ const Menu = ({ items }) => {
               <Button
                 as="a"
                 variant="success"
+                disabled={!certificatePdf}
                 onClick={() => {
-                  const certificatePdf = getCertificate(certificate);
-                  window.open(certificatePdf);
+                  if (certificatePdf) window.open(certificatePdf);
                 }}
               >
                 View Certificate

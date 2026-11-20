@@ -207,9 +207,6 @@ Menu
 .item-info h4 {
   margin-bottom: 0.5rem;
 }
-.price {
-  color: var(--clr-gold);
-}
 .item-text {
   margin-bottom: 0;
   padding-top: 1rem;
