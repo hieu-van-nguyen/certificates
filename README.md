@@ -1,69 +1,113 @@
 # My Certificates Portfolio
 
-A clean and simple React application to showcase professional certifications and achievements.
+A clean, lightweight React app that showcases my professional certifications. You can filter them by category and open each original certificate PDF.
+
+**Live site:** https://hieu-van-nguyen.github.io/certificates/
 
 ## 🚀 Features
 
-- **Categorized Viewing**: Filter certificates by category (e.g., FrontEnd, BackEnd, AI) to easily navigate through different skill sets.
-- **PDF Integration**: Direct access to certificate PDF documents.
-- **Responsive Design**: Built with React and Bootstrap for a seamless experience across different screen sizes.
+- **Category filters.** Browse by skill area (FrontEnd, BackEnd, AI, …). The filter buttons are generated automatically from the data.
+- **One-click PDFs.** Each card links straight to the original certificate, which opens in a new tab.
+- **Responsive layout.** One column on mobile and two columns on wide screens.
+- **Data-driven.** Adding a certificate means adding two files and one data entry. No component code changes.
+- **Tested.** Component tests, plus data checks that catch a missing image or PDF before deploy.
+
+## 🧰 Tech Stack
+
+- [React 18](https://react.dev/) bootstrapped with Create React App (`react-scripts` 5)
+- [Bootstrap 5](https://getbootstrap.com/) CSS for button styling, plus custom CSS in `src/index.css`
+- Jest and React Testing Library for tests
+- [`gh-pages`](https://github.com/tschaub/gh-pages) for deployment to GitHub Pages
 
 ## 🛠️ Getting Started
 
 ### Prerequisites
 
-Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
+- [Node.js](https://nodejs.org/) 18 or newer (developed on Node 20) and npm
 
 ### Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/hieu-van-nguyen/certificates.git
-   cd certificates
-   ```
+```bash
+git clone https://github.com/hieu-van-nguyen/certificates.git
+cd certificates
+npm install
+```
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+### Running locally
 
-### Running the App
-
-To start the application in development mode:
 ```bash
 npm start
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser to view the site.
+
+Then open http://localhost:3000/certificates. The app is served under `/certificates` to match GitHub Pages.
+
+## 📜 Available Scripts
+
+| Command | What it does |
+|---------|--------------|
+| `npm start` | Starts the dev server with hot reload |
+| `npm test` | Runs tests in interactive watch mode |
+| `npm run test:coverage` | Runs all tests once and prints a coverage report (HTML in `coverage/lcov-report/index.html`) |
+| `npm run build` | Creates an optimized production build in `build/` |
+| `npm run deploy` | Builds and publishes `build/` to the `gh-pages` branch |
+
+## 📁 Project Structure
+
+```
+public/
+  images/            Card preview images
+  pdf/               Certificate PDFs
+  index.html         Page template (title, meta tags)
+src/
+  data.js            Certificate metadata (the only file to edit when adding a certificate)
+  App.js             Category filter state and page layout
+  Categories.js      Category filter buttons
+  Menu.js            Certificate cards and "View Certificate" links
+  index.css          All styles (theme colours are CSS variables in :root)
+  __tests__/         Component and data tests
+```
+
+## 📝 Adding a New Certificate
+
+1. Copy the certificate PDF into `public/pdf/`.
+2. Copy a preview image into `public/images/`. Keep it small: about 450 px wide, WebP or a compressed PNG.
+3. Add an entry to the array in `src/data.js`:
+   ```javascript
+   {
+     id: 6,                                 // next unused number
+     title: "Certificate-Name",
+     category: "CategoryName",              // a new category gets its own filter button
+     img: "/images/item-6.png",             // path under public/
+     desc: "Short description of the certification",
+     certificate: "Certificate-Name.pdf"    // filename in public/pdf/
+   }
+   ```
+4. Check that everything is wired up:
+   ```bash
+   npm run test:coverage
+   ```
+   The data tests fail if an id is duplicated, a field is missing, or the image or PDF can't be found.
+
+> Filenames are case-sensitive on GitHub Pages. Make sure `img` and `certificate` match the files exactly.
+
+## 🧪 Testing
+
+Tests are in `src/__tests__/`:
+
+- **`App.test.js`**: the page renders one card per certificate, and the category filters work.
+- **`Menu.test.js`**: each card links to the right PDF, opens it safely in a new tab, and has alt text on its image.
+- **`data.test.js`**: certificate data is valid and every referenced image and PDF exists.
 
 ## 📦 Deployment
 
-The project is configured for deployment to GitHub Pages.
+The site is hosted on GitHub Pages from the `gh-pages` branch:
 
-To build and deploy:
 ```bash
 npm run deploy
 ```
 
-## 📁 Project Structure
+This builds the app (`predeploy`) and pushes the `build/` folder. The `homepage` field in `package.json` sets the `/certificates/` base path.
 
-- `src/data.js`: The single source of truth for certificate metadata. Update this file to add or modify certificates.
-- `src/pdf/`: Contains the PDF files for each certificate.
-- `public/images/`: Contains the preview images for the certificates.
-- `src/App.js`: Main logic for filtering and rendering the certificates.
+## 🗺️ Roadmap
 
-## 📝 Adding New Certificates
-
-To add a new certificate to your portfolio:
-1. Upload the certificate PDF to `src/pdf/`.
-2. Upload a preview image to `public/images/`.
-3. Add a new entry to the `menu` array in `src/data.js` following the existing format:
-   ```javascript
-   {
-     id: 6,
-     title: "Certificate-Name",
-     category: "CategoryName",
-     img: "/images/your-image.png",
-     desc: "Short description of the certification",
-     certificate: "Certificate-Name.pdf"
-   }
-   ```
+Planned improvements, including image optimization, richer certificate details (issuer, date, verification link), CI/CD and a move to Vite, are listed in [IMPROVEMENTS.md](IMPROVEMENTS.md).

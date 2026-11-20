@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import App from "./App";
-import items from "./data";
+import App from "../App";
+import items from "../data";
 
 const cardCount = () => screen.getAllByRole("article").length;
 
@@ -24,10 +24,10 @@ test("filters certificates by category and resets with 'all'", () => {
   expect(cardCount()).toBe(items.length);
 });
 
-test("every certificate has an enabled View Certificate button", () => {
+test("every certificate card has a View Certificate link", () => {
   render(<App />);
   screen.getAllByRole("article").forEach((card) => {
-    const button = within(card).getByText(/view certificate/i);
-    expect(button).not.toHaveClass("disabled");
+    const link = within(card).getByRole("link", { name: /view certificate/i });
+    expect(link).toHaveAttribute("href");
   });
 });
