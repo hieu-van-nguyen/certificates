@@ -17,7 +17,8 @@ A small React 18 single-page app, built with **Vite 6** and tested with **Vitest
 | Production build | `npm run build` | Output goes to `build/` (set in `vite.config.js`) |
 | Preview the build | `npm run preview` | Serves `build/` at http://localhost:4173/certificates/ |
 | Optimize images | `npm run images` | Converts every PNG/JPEG in `public/images/` to an 800 px-wide WebP and **deletes the original** |
-| Deploy | `npm run deploy` | Builds, then pushes `build/` to the `gh-pages` branch. **This publishes the live site. Only run it when the user asks.** |
+| Deploy | *automatic* | `.github/workflows/deploy.yml` tests, builds and publishes to Pages on every push to `main`. PRs to `main` only run tests and the build. **Pushing to `main` publishes the live site.** |
+| Manual deploy (fallback) | `npm run deploy` | Pushes `build/` to the `gh-pages` branch. Only takes effect if Pages is set to "Deploy from a branch". **Only run it when the user asks.** |
 
 Requires Node `^18 || ^20 || >=22`. Don't upgrade to Vite 7 or Vitest 4 while the dev machine is on Node 20.17, because they need Node ≥ 20.19. For the same reason `@testing-library/jest-dom` is pinned below 6.10, which needs Node 22.
 
@@ -94,6 +95,12 @@ Data flow: `data.js` → `App` (filters by category) → `Menu` (renders cards).
 - Query by role and accessible name (`getByRole("link", { name: /view certificate/i })`) rather than by class or test id.
 - In tests, `import.meta.env.BASE_URL` is `/certificates/`, same as in production.
 - Coverage uses `all: false`, which works around a Windows drive-letter casing bug that otherwise lists every file twice. So only files imported by tests are reported. Every source file is at 100%. Keep it there: new behaviour needs a test in the same change.
+
+### CI / deployment
+- The workflow runs `npm ci`, so **`package-lock.json` must stay in sync with `package.json`**. Always change dependencies with `npm install`/`npm uninstall`, never by hand-editing `package.json`, and commit both files.
+- CI runs on Ubuntu with Node 20. Keep the lockfile's Linux optional binaries (`@esbuild/linux-x64`, `@rollup/rollup-linux-x64-gnu`, `@img/sharp-linux-x64`). If they go missing, `npm ci` fails in CI even though it works on Windows.
+- If you change the Node version, update `node-version` in the workflow and `engines` in `package.json` together.
+- On Windows, `npm ci` fails with `EPERM` while a Vite dev or preview server is running, because it locks `esbuild.exe`. It also deletes most of `node_modules` before failing. Stop the servers first, or use `npm install` locally.
 
 ### Housekeeping
 - Keep `README.md` and this file in sync when the workflow, structure or scripts change.

@@ -17,7 +17,7 @@ A clean, lightweight React app that showcases my professional certifications. Yo
 - [React 18](https://react.dev/) built with [Vite 6](https://vite.dev/)
 - [Bootstrap 5](https://getbootstrap.com/) CSS for button styling, plus custom CSS in `src/index.css`
 - [Vitest 3](https://vitest.dev/) and React Testing Library for tests
-- [`gh-pages`](https://github.com/tschaub/gh-pages) for deployment to GitHub Pages
+- GitHub Actions for automatic testing and deployment to GitHub Pages
 
 ## 🛠️ Getting Started
 
@@ -52,7 +52,7 @@ Then open http://localhost:3000/certificates/ (it opens automatically). The app 
 | `npm run build` | Creates an optimized production build in `build/` |
 | `npm run preview` | Serves the production build locally at http://localhost:4173/certificates/ |
 | `npm run images` | Converts PNG/JPEG previews in `public/images/` to optimized 800 px WebP (replaces the originals) |
-| `npm run deploy` | Builds and publishes `build/` to the `gh-pages` branch |
+| `npm run deploy` | Manual fallback: builds and pushes `build/` to the `gh-pages` branch (see Deployment) |
 
 ## 📁 Project Structure
 
@@ -111,13 +111,21 @@ Tests are in `src/__tests__/`:
 
 ## 📦 Deployment
 
-The site is hosted on GitHub Pages from the `gh-pages` branch:
+Deployment is automatic. The [Test & Deploy workflow](.github/workflows/deploy.yml) runs on GitHub Actions:
 
-```bash
-npm run deploy
-```
+| Event | What happens |
+|-------|--------------|
+| Pull request to `main` | `npm ci` → tests with coverage → build. Nothing is published. |
+| Push to `main` | The same checks, then the build is published to GitHub Pages. |
+| Manual run (Actions tab → *Run workflow*) | The same as a push to `main`. |
 
-This builds the app (`predeploy`) and pushes the `build/` folder. The `/certificates/` base path is set by `base` in `vite.config.js`. If the repository is renamed, update it there and in `homepage` in `package.json`.
+If a test or the build fails, nothing is deployed and the live site stays as it was.
+
+**One-time setup:** in the repository's **Settings → Pages → Build and deployment**, set **Source** to **GitHub Actions**.
+
+`npm run deploy` (which pushes `build/` to the `gh-pages` branch) is kept as a manual fallback. It only affects the live site while Pages is set to *Deploy from a branch*.
+
+The `/certificates/` base path is set by `base` in `vite.config.js`. If the repository is renamed, update it there and in `homepage` in `package.json`.
 
 ## 🗺️ Roadmap
 
